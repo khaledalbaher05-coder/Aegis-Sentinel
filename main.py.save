@@ -1,4 +1,11 @@
-import logging
+cczx
+
+
+
+
+
+
+
 
 from telegram.ext import (
     ApplicationBuilder,
@@ -102,13 +109,11 @@ def main():
     # =========================
     # JOBS
     # =========================
-    if app.job_queue:
-
-        app.job_queue.run_repeating(
-            send_jobs_to_channel,
-            interval=300,
-            first=10
-        )
+    app.job_queue.run_repeating(
+        send_jobs_to_channel,
+        interval=300,
+        first=10
+    )
 
     print("✅ BOT ONLINE")
 
