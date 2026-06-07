@@ -59,6 +59,7 @@ def main():
     app = (
         ApplicationBuilder()
         .token(TOKEN)
+        .updater(None)
         .build()
     )
 
@@ -102,11 +103,13 @@ def main():
     # =========================
     # JOBS
     # =========================
-    app.job_queue.run_repeating(
-        send_jobs_to_channel,
-        interval=300,
-        first=10
-    )
+    if app.job_queue:
+
+        app.job_queue.run_repeating(
+            send_jobs_to_channel,
+            interval=300,
+            first=10
+        )
 
     print("✅ BOT ONLINE")
 
