@@ -12,6 +12,8 @@ from telegram.ext import (
     filters
 )
 
+import random
+
 from bot.database import (
     register_user,
     get_all_services,
@@ -534,17 +536,66 @@ async def send_jobs_to_channel(context):
 
     try:
 
-        title = "🛡️ CYBER FORTRESS PRO"
+        offers = [
 
-        description = """
+            {
+                "title": "🛡️ CYBER FORTRESS PRO",
+                "description": """
 ✅ Channel Shield
 ✅ Dark Web Monitoring
 ✅ Instant Threat Alerts
-"""
+""",
+                "price": "199"
+            },
 
-        price = "199"
+            {
+                "title": "🔥 TELEGRAM DEFENDER X",
+                "description": """
+✅ Anti Spam System
+✅ Auto Ban Attackers
+✅ AI Security Protection
+""",
+                "price": "149"
+            },
 
-        # TELEGRAM
+            {
+                "title": "🚀 VIP Security Shield",
+                "description": """
+✅ Full Telegram Protection
+✅ Advanced Moderation
+✅ Scam Detection
+""",
+                "price": "179"
+            },
+
+            {
+                "title": "💎 DARK WEB HUNTER",
+                "description": """
+✅ Leak Monitoring
+✅ Credential Detection
+✅ Deep Scan Technology
+""",
+                "price": "249"
+            },
+
+            {
+                "title": "⚡ AEGIS ULTIMATE",
+                "description": """
+✅ Military Grade Protection
+✅ AI Monitoring
+✅ Live Threat Response
+""",
+                "price": "299"
+            }
+
+        ]
+
+        offer = random.choice(offers)
+
+        title = offer["title"]
+        description = offer["description"]
+        price = offer["price"]
+
         await context.bot.send_message(
             chat_id=CHANNEL_USERNAME,
             text=f"""
@@ -565,7 +616,6 @@ async def send_jobs_to_channel(context):
 """
         )
 
-        # LANDING PAGE
         offer_data = f"""{title}
 {description}
 {price}
