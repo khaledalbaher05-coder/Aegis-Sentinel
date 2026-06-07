@@ -293,6 +293,19 @@ ${price}
 """
     )
 
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "⬅️ الرجوع للرئيسية",
+                callback_data="back_main"
+            )
+        ]
+    ]
+
+    reply_markup = InlineKeyboardMarkup(
+        keyboard
+    )
+
     await query.edit_message_text(
         f"""
 ✅ تم التفعيل بنجاح
@@ -308,7 +321,8 @@ ${price}
 ━━━━━━━━━━━━━━
 
 🟢 الحماية مفعلة
-"""
+""",
+        reply_markup=reply_markup
     )
 
 # =========================
@@ -327,6 +341,19 @@ async def pay_crypto(
 
     data = pending_payments[user_id]
 
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "⬅️ رجوع",
+                callback_data="back_main"
+            )
+        ]
+    ]
+
+    reply_markup = InlineKeyboardMarkup(
+        keyboard
+    )
+
     text = f"""
 💸 الدفع عبر USDT
 
@@ -343,7 +370,8 @@ ${data['price']}
 """
 
     await query.edit_message_text(
-        text
+        text,
+        reply_markup=reply_markup
     )
 
 # =========================
@@ -362,7 +390,20 @@ async def pay_shamcash(
 
     data = pending_payments[user_id]
 
-    text = f"""
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "⬅️ رجوع",
+                callback_data="back_main"
+            )
+        ]
+    ]
+
+    reply_markup = InlineKeyboardMarkup(
+        keyboard
+    )
+
+    caption = f"""
 📲 الدفع عبر شام كاش
 
 ━━━━━━━━━━━━━━
@@ -372,12 +413,24 @@ ${data['price']}
 
 ━━━━━━━━━━━━━━
 
-⚠️ أرسل صورة التحويل للإدارة
+📌 الرقم:
+0933333333
+
+━━━━━━━━━━━━━━
+
+📸 قم بمسح QR وإرسال صورة التحويل للإدارة
 """
 
-    await query.edit_message_text(
-        text
-    )
+    with open(
+        "assets/shamcash_qr.png",
+        "rb"
+    ) as qr:
+
+        await query.message.reply_photo(
+            photo=qr,
+            caption=caption,
+            reply_markup=reply_markup
+        )
 
 # =========================
 # BACK MAIN
