@@ -40,10 +40,7 @@ active_users = {}
 # =========================
 # START COMMAND
 # =========================
-async def start(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE
-):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user = update.effective_user
 
@@ -52,9 +49,7 @@ async def start(
         user.username or user.first_name
     )
 
-    balance = get_user_balance(
-        user.id
-    )
+    balance = get_user_balance(user.id)
 
     services = get_all_services()
 
@@ -69,9 +64,7 @@ async def start(
             )
         ])
 
-    reply_markup = InlineKeyboardMarkup(
-        keyboard
-    )
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
     protection_status = "🔴 غير مفعلة"
 
@@ -100,12 +93,59 @@ ${balance}
     )
 
 # =========================
+# MAIN MENU
+# =========================
+async def show_main_menu(query):
+
+    services = get_all_services()
+
+    keyboard = []
+
+    for service in services:
+
+        keyboard.append([
+            InlineKeyboardButton(
+                service[1],
+                callback_data=f"service_{service[0]}"
+            )
+        ])
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    balance = get_user_balance(
+        query.from_user.id
+    )
+
+    protection_status = "🔴 غير مفعلة"
+
+    if query.from_user.id in active_users:
+        protection_status = "🟢 مفعلة"
+
+    text = f"""
+🛡️ AEGIS SENTINEL
+
+━━━━━━━━━━━━━━
+
+💰 الرصيد:
+${balance}
+
+🛡️ الحماية:
+{protection_status}
+
+━━━━━━━━━━━━━━
+
+اختر الخدمة:
+"""
+
+    await query.message.reply_text(
+        text,
+        reply_markup=reply_markup
+    )
+
+# =========================
 # SERVICE CLICK
 # =========================
-async def service_click(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE
-):
+async def service_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
 
@@ -206,9 +246,7 @@ ${price}
         ]
     ]
 
-    reply_markup = InlineKeyboardMarkup(
-        keyboard
-    )
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
     await query.edit_message_text(
         text,
@@ -218,10 +256,7 @@ ${price}
 # =========================
 # BUY FROM BALANCE
 # =========================
-async def buy_balance(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE
-):
+async def buy_balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
 
@@ -239,9 +274,7 @@ async def buy_balance(
 
     data = pending_payments[user_id]
 
-    balance = get_user_balance(
-        user_id
-    )
+    balance = get_user_balance(user_id)
 
     price = data["price"]
 
@@ -302,9 +335,7 @@ ${price}
         ]
     ]
 
-    reply_markup = InlineKeyboardMarkup(
-        keyboard
-    )
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
     await query.edit_message_text(
         f"""
@@ -328,10 +359,7 @@ ${price}
 # =========================
 # PAY CRYPTO
 # =========================
-async def pay_crypto(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE
-):
+async def pay_crypto(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
 
@@ -350,9 +378,7 @@ async def pay_crypto(
         ]
     ]
 
-    reply_markup = InlineKeyboardMarkup(
-        keyboard
-    )
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
     text = f"""
 💸 الدفع عبر USDT
@@ -377,10 +403,7 @@ ${data['price']}
 # =========================
 # PAY SHAMCASH
 # =========================
-async def pay_shamcash(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE
-):
+async def pay_shamcash(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
 
@@ -399,9 +422,7 @@ async def pay_shamcash(
         ]
     ]
 
-    reply_markup = InlineKeyboardMarkup(
-        keyboard
-    )
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
     caption = f"""
 📲 الدفع عبر شام كاش
@@ -421,79 +442,44 @@ ${data['price']}
 📸 قم بمسح QR وإرسال صورة التحويل للإدارة
 """
 
-    with open(
-        "assets/shamcash_qr.png",
-        "rb"
-    ) as qr:
+    try:
 
-        await query.message.reply_photo(
-            photo=qr,
-            caption=caption,
-            reply_markup=reply_markup
+        with open("assets/shamcash_qr.png", "rb") as qr:
+
+            await query.message.reply_photo(
+                photo=qr,
+                caption=caption,
+                reply_markup=reply_markup
+            )
+
+        await query.message.delete()
+
+    except Exception as e:
+
+        await query.message.reply_text(
+            f"❌ خطأ بتحميل QR\n\n{e}"
         )
 
 # =========================
 # BACK MAIN
 # =========================
-async def back_main(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE
-):
+async def back_main(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     query = update.callback_query
 
     await query.answer()
 
-    services = get_all_services()
+    try:
+        await query.message.delete()
+    except:
+        pass
 
-    keyboard = []
-
-    for service in services:
-
-        keyboard.append([
-            InlineKeyboardButton(
-                service[1],
-                callback_data=f"service_{service[0]}"
-            )
-        ])
-
-    reply_markup = InlineKeyboardMarkup(
-        keyboard
-    )
-
-    balance = get_user_balance(
-        query.from_user.id
-    )
-
-    protection_status = "🔴 غير مفعلة"
-
-    if query.from_user.id in active_users:
-        protection_status = "🟢 مفعلة"
-
-    await query.edit_message_text(
-        f"""
-🛡️ AEGIS SENTINEL
-
-💰 الرصيد:
-${balance}
-
-🛡️ الحماية:
-{protection_status}
-
-━━━━━━━━━━━━━━
-
-اختر الخدمة:
-""",
-        reply_markup=reply_markup
-    )
+    await show_main_menu(query)
 
 # =========================
 # STATUS COMMAND
 # =========================
-async def status_command(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE
-):
+async def status_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     user_id = update.effective_user.id
 
@@ -521,19 +507,41 @@ async def status_command(
 # =========================
 # TXID HANDLER
 # =========================
-async def txid_handler(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE
-):
+async def txid_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return
 
 # =========================
-# SEND JOBS TO CHANNEL
+# AUTO OFFERS
 # =========================
-async def send_jobs_to_channel(
-    context
-):
-    return
+async def send_jobs_to_channel(context):
+
+    try:
+
+        await context.bot.send_message(
+            chat_id=CHANNEL_USERNAME,
+            text="""
+🔥 عرض تلقائي جديد
+
+━━━━━━━━━━━━━━
+
+🛡️ CYBER FORTRESS PRO
+
+✅ Channel Shield
+✅ Dark Web Monitoring
+✅ Instant Threat Alerts
+
+💰 السعر:
+199$
+
+━━━━━━━━━━━━━━
+
+🚀 اطلب الآن عبر البوت
+"""
+        )
+
+    except Exception as e:
+
+        print("AUTO OFFER ERROR:", e)
 
 # =========================
 # SETUP HANDLERS
