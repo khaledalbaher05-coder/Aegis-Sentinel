@@ -1,4 +1,5 @@
 import logging
+import asyncio
 
 from telegram.ext import (
     ApplicationBuilder,
@@ -8,7 +9,6 @@ from telegram.ext import (
 )
 
 from bot.config import TOKEN
-
 from bot.database import init_db
 
 from bot.handlers.user_handlers import (
@@ -24,7 +24,6 @@ from bot.security.security import (
     anti_spam,
     activate_group
 )
-
 
 # =========================
 # LOGGING
@@ -48,7 +47,7 @@ async def error_handler(update, context):
 # =========================
 # MAIN
 # =========================
-def main():
+async def main():
 
     print("🚀 STARTING BOT")
 
@@ -68,9 +67,7 @@ def main():
     # ADMIN
     setup_admin_handlers(app)
 
-    # =========================
     # ACTIVATE
-    # =========================
     app.add_handler(
         CommandHandler(
             "activate",
@@ -79,9 +76,7 @@ def main():
         group=0
     )
 
-    # =========================
     # GROUP SECURITY
-    # =========================
     app.add_handler(
         MessageHandler(
             filters.ChatType.GROUPS
@@ -92,16 +87,12 @@ def main():
         group=1
     )
 
-    # =========================
     # ERRORS
-    # =========================
     app.add_error_handler(
         error_handler
     )
 
-    # =========================
     # JOBS
-    # =========================
     if app.job_queue:
 
         app.job_queue.run_repeating(
@@ -112,10 +103,14 @@ def main():
 
     print("✅ BOT ONLINE")
 
-    # START
-    app.run_polling(
-        drop_pending_updates=True
-    )
+    # START BOT
+    await app.initialize()
+    await app.start()
+    await app.updater.start_polling()
+
+    # KEEP RUNNING
+    while True:
+        await asyncio.sleep(3600)
 
 
 # =========================
@@ -123,5 +118,5 @@ def main():
 # =========================
 if __name__ == "__main__":
 
-    main()
+    asyncio.run(main())
 
