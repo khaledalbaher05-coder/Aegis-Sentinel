@@ -517,27 +517,56 @@ async def send_jobs_to_channel(context):
 
     try:
 
+        title = "🛡️ CYBER FORTRESS PRO"
+
+        description = """
+✅ Channel Shield
+✅ Dark Web Monitoring
+✅ Instant Threat Alerts
+"""
+
+        price = "199"
+
+        # =========================
+        # SEND TO TELEGRAM
+        # =========================
         await context.bot.send_message(
             chat_id=CHANNEL_USERNAME,
-            text="""
+            text=f"""
 🔥 عرض تلقائي جديد
 
 ━━━━━━━━━━━━━━
 
-🛡️ CYBER FORTRESS PRO
+{title}
 
-✅ Channel Shield
-✅ Dark Web Monitoring
-✅ Instant Threat Alerts
+{description}
 
 💰 السعر:
-199$
+{price}$
 
 ━━━━━━━━━━━━━━
 
 🚀 اطلب الآن عبر البوت
 """
         )
+
+        # =========================
+        # SAVE TO LANDING PAGE
+        # =========================
+        offer_data = f"""{title}
+{description}
+{price}
+"""
+
+        with open(
+            "landing_page/offers.txt",
+            "w",
+            encoding="utf-8"
+        ) as f:
+
+            f.write(offer_data)
+
+        print("✅ OFFER SENT + SAVED")
 
     except Exception as e:
 
