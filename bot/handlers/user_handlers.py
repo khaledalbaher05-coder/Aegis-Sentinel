@@ -380,8 +380,8 @@ async def pay_crypto(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    text = f"""
-💸 الدفع عبر USDT
+    caption = f"""
+💸 الدفع عبر USDT (TRC20)
 
 ━━━━━━━━━━━━━━
 
@@ -390,15 +390,32 @@ ${data['price']}
 
 ━━━━━━━━━━━━━━
 
-🏦 المحفظة:
+🏦 عنوان المحفظة:
 
-{WALLET_ADDRESS}
+TNphKc3qmusVEHW4bw17LnHWGMAVxa1WdB
+
+━━━━━━━━━━━━━━
+
+📸 قم بمسح QR وإرسال صورة التحويل للإدارة
 """
 
-    await query.edit_message_text(
-        text,
-        reply_markup=reply_markup
-    )
+    try:
+
+        with open("assets/usdt_qr.png", "rb") as qr:
+
+            await query.message.reply_photo(
+                photo=qr,
+                caption=caption,
+                reply_markup=reply_markup
+            )
+
+        await query.message.delete()
+
+    except Exception as e:
+
+        await query.message.reply_text(
+            f"❌ خطأ بتحميل QR\n\n{e}"
+        )
 
 # =========================
 # PAY SHAMCASH
@@ -527,9 +544,7 @@ async def send_jobs_to_channel(context):
 
         price = "199"
 
-        # =========================
-        # SEND TO TELEGRAM
-        # =========================
+        # TELEGRAM
         await context.bot.send_message(
             chat_id=CHANNEL_USERNAME,
             text=f"""
@@ -550,16 +565,14 @@ async def send_jobs_to_channel(context):
 """
         )
 
-        # =========================
-        # SAVE TO LANDING PAGE
-        # =========================
+        # LANDING PAGE
         offer_data = f"""{title}
 {description}
 {price}
 """
 
         with open(
-            "landing_page/offers.txt",
+            "offers.txt",
             "w",
             encoding="utf-8"
         ) as f:
