@@ -479,6 +479,46 @@ async def send_jobs_to_channel(context):
         description = offer["description"]
         price = offer["price"]
 
+        # DELETE OLD OFFER
+        try:
+
+            with open("last_offer.txt", "r") as f:
+                old_msg_id = int(f.read())
+
+            await context.bot.delete_message(
+                chat_id=CHANNEL_USERNAME,
+                message_id=old_msg_id
+            )
+
+        except:
+            pass
+
+        # SEND NEW OFFER
+        msg = await context.bot.send_message(
+            chat_id=CHANNEL_USERNAME,
+            text=f"""
+🔥 عرض تلقائي جديد
+
+━━━━━━━━━━━━━━
+
+{title}
+
+{description}
+
+💰 السعر:
+{price}$
+
+━━━━━━━━━━━━━━
+
+🚀 اطلب الآن عبر البوت
+"""
+        )
+
+        # SAVE MESSAGE ID
+        with open("last_offer.txt", "w") as f:
+            f.write(str(msg.message_id))
+
+        # UPDATE WEBSITE
         offer_data = {
             "title": title,
             "description": description,
@@ -497,7 +537,7 @@ async def send_jobs_to_channel(context):
                 ensure_ascii=False
             )
 
-        print("✅ WEBSITE UPDATED")
+        print("✅ OFFER SENT + WEBSITE UPDATED")
 
     except Exception as e:
 
