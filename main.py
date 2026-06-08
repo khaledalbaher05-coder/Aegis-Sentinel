@@ -1,5 +1,8 @@
 import logging
 import asyncio
+import threading
+
+from flask import Flask, send_from_directory
 
 from telegram.ext import (
     ApplicationBuilder,
@@ -26,6 +29,28 @@ from bot.security.security import (
 )
 
 # =========================
+# FLASK APP
+# =========================
+web_app = Flask(
+    __name__,
+    static_folder="landing_page"
+)
+
+@web_app.route("/")
+def landing_page():
+    return send_from_directory(
+        "landing_page",
+        "index.html"
+    )
+
+@web_app.route("/offers.txt")
+def offers():
+    return send_from_directory(
+        ".",
+        "offers.txt"
+    )
+
+# =========================
 # LOGGING
 # =========================
 logging.basicConfig(
@@ -35,7 +60,6 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-
 # =========================
 # ERROR HANDLER
 # =========================
@@ -43,11 +67,10 @@ async def error_handler(update, context):
 
     print("ERROR:", context.error)
 
-
 # =========================
-# MAIN
+# BOT MAIN
 # =========================
-async def main():
+async def bot_main():
 
     print("🚀 STARTING BOT")
 
@@ -92,7 +115,7 @@ async def main():
         error_handler
     )
 
-    # JOBS
+    # AUTO OFFERS
     if app.job_queue:
 
         app.job_queue.run_repeating(
@@ -112,11 +135,26 @@ async def main():
     while True:
         await asyncio.sleep(3600)
 
+# =========================
+# START FLASK
+# =========================
+def run_web():
+
+    web_app.run(
+        host="0.0.0.0",
+        port=10000
+    )
 
 # =========================
-# START
+# START ALL
 # =========================
 if __name__ == "__main__":
 
-    asyncio.run(main())
+    # START WEBSITE
+    threading.Thread(
+        target=run_web
+    ).start()
+
+    # START BOT
+    asyncio.run(bot_main())
 
