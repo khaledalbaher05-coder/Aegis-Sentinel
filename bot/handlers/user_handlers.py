@@ -14,14 +14,12 @@ from telegram.ext import (
 
 import random
 import json
-import os
 
 from bot.database import (
     register_user,
     get_all_services,
     create_order,
     get_user_balance,
-    deduct_balance,
     activate_subscription
 )
 
@@ -288,7 +286,7 @@ TNphKc3qmusVEHW4bw17LnHWGMAVxa1WdB
 
 ━━━━━━━━━━━━━━
 
-📸 قم بمسح QR وإرسال صورة التحويل للإدارة
+✅ بعد الدفع يتم التفعيل التلقائي مباشرة
 """
 
     with open("assets/usdt_qr.png", "rb") as qr:
@@ -298,6 +296,34 @@ TNphKc3qmusVEHW4bw17LnHWGMAVxa1WdB
             caption=caption,
             reply_markup=reply_markup
         )
+
+    active_users[user_id] = {
+        "service": data["service"]
+    }
+
+    activate_subscription(
+        user_id,
+        data["service"]
+    )
+
+    await context.bot.send_message(
+        chat_id=user_id,
+        text=f"""
+✅ تم تفعيل الخدمة تلقائياً
+
+━━━━━━━━━━━━━━
+
+🛡️ الخدمة:
+{data['service']}
+
+💰 السعر:
+${data['price']}
+
+━━━━━━━━━━━━━━
+
+🚀 الحماية أصبحت مفعلة
+"""
+    )
 
 # =========================
 # PAY SHAMCASH
@@ -338,7 +364,7 @@ ${data['price']}
 
 ━━━━━━━━━━━━━━
 
-📸 قم بمسح QR وإرسال صورة التحويل للإدارة
+✅ بعد الدفع يتم التفعيل التلقائي مباشرة
 """
 
     with open("assets/shamcash_qr.png", "rb") as qr:
@@ -440,7 +466,6 @@ async def send_jobs_to_channel(context):
         description = offer["description"]
         price = offer["price"]
 
-        # DELETE OLD TELEGRAM OFFER
         try:
 
             with open("last_offer.txt", "r") as f:
@@ -454,7 +479,6 @@ async def send_jobs_to_channel(context):
         except:
             pass
 
-        # SEND NEW OFFER
         msg = await context.bot.send_message(
             chat_id=CHANNEL_USERNAME,
             text=f"""
@@ -475,13 +499,9 @@ async def send_jobs_to_channel(context):
 """
         )
 
-        # SAVE TELEGRAM MESSAGE ID
         with open("last_offer.txt", "w") as f:
             f.write(str(msg.message_id))
 
-        # =========================
-        # SAVE TO WEBSITE
-        # =========================
         offer_data = {
             "title": title,
             "description": description,
