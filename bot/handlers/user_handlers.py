@@ -260,6 +260,14 @@ async def pay_crypto(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data = pending_payments[user_id]
 
     keyboard = [
+
+        [
+            InlineKeyboardButton(
+                "✅ تم الدفع",
+                callback_data="confirm_payment"
+            )
+        ],
+
         [
             InlineKeyboardButton(
                 "⬅️ رجوع",
@@ -286,7 +294,8 @@ TNphKc3qmusVEHW4bw17LnHWGMAVxa1WdB
 
 ━━━━━━━━━━━━━━
 
-✅ بعد الدفع يتم التفعيل التلقائي مباشرة
+📸 قم بالدفع ثم اضغط:
+✅ تم الدفع
 """
 
     with open("assets/usdt_qr.png", "rb") as qr:
@@ -297,6 +306,27 @@ TNphKc3qmusVEHW4bw17LnHWGMAVxa1WdB
             reply_markup=reply_markup
         )
 
+# =========================
+# CONFIRM PAYMENT
+# =========================
+async def confirm_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+
+    await query.answer()
+
+    user_id = query.from_user.id
+
+    if user_id not in pending_payments:
+
+        await query.message.reply_text(
+            "❌ لا يوجد طلب"
+        )
+
+        return
+
+    data = pending_payments[user_id]
+
     active_users[user_id] = {
         "service": data["service"]
     }
@@ -306,9 +336,8 @@ TNphKc3qmusVEHW4bw17LnHWGMAVxa1WdB
         data["service"]
     )
 
-    await context.bot.send_message(
-        chat_id=user_id,
-        text=f"""
+    await query.message.reply_text(
+        f"""
 ✅ تم تفعيل الخدمة تلقائياً
 
 ━━━━━━━━━━━━━━
@@ -361,10 +390,6 @@ ${data['price']}
 
 📌 الرقم:
 0933333333
-
-━━━━━━━━━━━━━━
-
-✅ بعد الدفع يتم التفعيل التلقائي مباشرة
 """
 
     with open("assets/shamcash_qr.png", "rb") as qr:
@@ -450,12 +475,6 @@ async def send_jobs_to_channel(context):
                 "title": "🚀 VIP Security Shield",
                 "description": "✅ Full Telegram Protection\n✅ Advanced Moderation\n✅ Scam Detection",
                 "price": "179"
-            },
-
-            {
-                "title": "💎 DARK WEB HUNTER",
-                "description": "✅ Leak Monitoring\n✅ Credential Detection\n✅ Deep Scan Technology",
-                "price": "249"
             }
 
         ]
@@ -465,42 +484,6 @@ async def send_jobs_to_channel(context):
         title = offer["title"]
         description = offer["description"]
         price = offer["price"]
-
-        try:
-
-            with open("last_offer.txt", "r") as f:
-                old_msg_id = int(f.read())
-
-            await context.bot.delete_message(
-                chat_id=CHANNEL_USERNAME,
-                message_id=old_msg_id
-            )
-
-        except:
-            pass
-
-        msg = await context.bot.send_message(
-            chat_id=CHANNEL_USERNAME,
-            text=f"""
-🔥 عرض تلقائي جديد
-
-━━━━━━━━━━━━━━
-
-{title}
-
-{description}
-
-💰 السعر:
-{price}$
-
-━━━━━━━━━━━━━━
-
-🚀 اطلب الآن عبر البوت
-"""
-        )
-
-        with open("last_offer.txt", "w") as f:
-            f.write(str(msg.message_id))
 
         offer_data = {
             "title": title,
@@ -520,7 +503,7 @@ async def send_jobs_to_channel(context):
                 ensure_ascii=False
             )
 
-        print("✅ OFFER SENT + WEBSITE UPDATED")
+        print("✅ WEBSITE UPDATED")
 
     except Exception as e:
 
@@ -556,6 +539,13 @@ def setup_handlers(app):
         CallbackQueryHandler(
             pay_crypto,
             pattern="^pay_crypto$"
+        )
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(
+            confirm_payment,
+            pattern="^confirm_payment$"
         )
     )
 
