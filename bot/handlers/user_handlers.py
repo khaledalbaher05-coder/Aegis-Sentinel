@@ -13,6 +13,8 @@ from telegram.ext import (
 )
 
 import random
+import json
+import os
 
 from bot.database import (
     register_user,
@@ -438,7 +440,7 @@ async def send_jobs_to_channel(context):
         description = offer["description"]
         price = offer["price"]
 
-        # DELETE OLD OFFER
+        # DELETE OLD TELEGRAM OFFER
         try:
 
             with open("last_offer.txt", "r") as f:
@@ -473,25 +475,32 @@ async def send_jobs_to_channel(context):
 """
         )
 
-        # SAVE MESSAGE ID
+        # SAVE TELEGRAM MESSAGE ID
         with open("last_offer.txt", "w") as f:
             f.write(str(msg.message_id))
 
-        # UPDATE WEBSITE
-        offer_data = f"""{title}
-{description}
-{price}
-"""
+        # =========================
+        # SAVE TO WEBSITE
+        # =========================
+        offer_data = {
+            "title": title,
+            "description": description,
+            "price": price
+        }
 
         with open(
-            "offers.txt",
+            "offers.json",
             "w",
             encoding="utf-8"
         ) as f:
 
-            f.write(offer_data)
+            json.dump(
+                offer_data,
+                f,
+                ensure_ascii=False
+            )
 
-        print("✅ OFFER SENT + SAVED")
+        print("✅ OFFER SENT + WEBSITE UPDATED")
 
     except Exception as e:
 
