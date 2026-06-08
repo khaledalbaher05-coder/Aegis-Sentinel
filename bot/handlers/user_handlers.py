@@ -18,14 +18,12 @@ from bot.database import (
     register_user,
     get_all_services,
     create_order,
-    save_payment,
     get_user_balance,
     deduct_balance,
     activate_subscription
 )
 
 from bot.config import (
-    WALLET_ADDRESS,
     CHANNEL_USERNAME
 )
 
@@ -223,13 +221,6 @@ ${price}
 
         [
             InlineKeyboardButton(
-                "💰 شراء من الرصيد",
-                callback_data="buy_balance"
-            )
-        ],
-
-        [
-            InlineKeyboardButton(
                 "💸 USDT",
                 callback_data="pay_crypto"
             ),
@@ -252,109 +243,6 @@ ${price}
 
     await query.edit_message_text(
         text,
-        reply_markup=reply_markup
-    )
-
-# =========================
-# BUY FROM BALANCE
-# =========================
-async def buy_balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    query = update.callback_query
-
-    await query.answer()
-
-    user_id = query.from_user.id
-
-    if user_id not in pending_payments:
-
-        await query.edit_message_text(
-            "❌ لا يوجد طلب"
-        )
-
-        return
-
-    data = pending_payments[user_id]
-
-    balance = get_user_balance(user_id)
-
-    price = data["price"]
-
-    if balance < price:
-
-        await query.edit_message_text(
-            f"""
-❌ الرصيد غير كافي
-
-💰 رصيدك:
-${balance}
-
-💳 السعر:
-${price}
-"""
-        )
-
-        return
-
-    deduct_balance(
-        user_id,
-        price
-    )
-
-    activate_subscription(
-        user_id,
-        data["service"]
-    )
-
-    active_users[user_id] = {
-        "service": data["service"]
-    }
-
-    await context.bot.send_message(
-        chat_id=CHANNEL_USERNAME,
-        text=f"""
-🎉 عملية شراء جديدة
-
-━━━━━━━━━━━━━━
-
-🛡️ الخدمة:
-{data['service']}
-
-💰 السعر:
-${price}
-
-👤 المستخدم:
-{user_id}
-"""
-    )
-
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "⬅️ الرجوع للرئيسية",
-                callback_data="back_main"
-            )
-        ]
-    ]
-
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    await query.edit_message_text(
-        f"""
-✅ تم التفعيل بنجاح
-
-━━━━━━━━━━━━━━
-
-🛡️ الخدمة:
-{data['service']}
-
-💰 السعر:
-${price}
-
-━━━━━━━━━━━━━━
-
-🟢 الحماية مفعلة
-""",
         reply_markup=reply_markup
     )
 
@@ -401,22 +289,12 @@ TNphKc3qmusVEHW4bw17LnHWGMAVxa1WdB
 📸 قم بمسح QR وإرسال صورة التحويل للإدارة
 """
 
-    try:
+    with open("assets/usdt_qr.png", "rb") as qr:
 
-        with open("assets/usdt_qr.png", "rb") as qr:
-
-            await query.message.reply_photo(
-                photo=qr,
-                caption=caption,
-                reply_markup=reply_markup
-            )
-
-        await query.message.delete()
-
-    except Exception as e:
-
-        await query.message.reply_text(
-            f"❌ خطأ بتحميل QR\n\n{e}"
+        await query.message.reply_photo(
+            photo=qr,
+            caption=caption,
+            reply_markup=reply_markup
         )
 
 # =========================
@@ -461,22 +339,12 @@ ${data['price']}
 📸 قم بمسح QR وإرسال صورة التحويل للإدارة
 """
 
-    try:
+    with open("assets/shamcash_qr.png", "rb") as qr:
 
-        with open("assets/shamcash_qr.png", "rb") as qr:
-
-            await query.message.reply_photo(
-                photo=qr,
-                caption=caption,
-                reply_markup=reply_markup
-            )
-
-        await query.message.delete()
-
-    except Exception as e:
-
-        await query.message.reply_text(
-            f"❌ خطأ بتحميل QR\n\n{e}"
+        await query.message.reply_photo(
+            photo=qr,
+            caption=caption,
+            reply_markup=reply_markup
         )
 
 # =========================
@@ -540,52 +408,26 @@ async def send_jobs_to_channel(context):
 
             {
                 "title": "🛡️ CYBER FORTRESS PRO",
-                "description": """
-✅ Channel Shield
-✅ Dark Web Monitoring
-✅ Instant Threat Alerts
-""",
+                "description": "✅ Channel Shield\n✅ Dark Web Monitoring\n✅ Instant Threat Alerts",
                 "price": "199"
             },
 
             {
                 "title": "🔥 TELEGRAM DEFENDER X",
-                "description": """
-✅ Anti Spam System
-✅ Auto Ban Attackers
-✅ AI Security Protection
-""",
+                "description": "✅ Anti Spam System\n✅ Auto Ban Attackers\n✅ AI Security Protection",
                 "price": "149"
             },
 
             {
                 "title": "🚀 VIP Security Shield",
-                "description": """
-✅ Full Telegram Protection
-✅ Advanced Moderation
-✅ Scam Detection
-""",
+                "description": "✅ Full Telegram Protection\n✅ Advanced Moderation\n✅ Scam Detection",
                 "price": "179"
             },
 
             {
                 "title": "💎 DARK WEB HUNTER",
-                "description": """
-✅ Leak Monitoring
-✅ Credential Detection
-✅ Deep Scan Technology
-""",
+                "description": "✅ Leak Monitoring\n✅ Credential Detection\n✅ Deep Scan Technology",
                 "price": "249"
-            },
-
-            {
-                "title": "⚡ AEGIS ULTIMATE",
-                "description": """
-✅ Military Grade Protection
-✅ AI Monitoring
-✅ Live Threat Response
-""",
-                "price": "299"
             }
 
         ]
@@ -596,7 +438,22 @@ async def send_jobs_to_channel(context):
         description = offer["description"]
         price = offer["price"]
 
-        await context.bot.send_message(
+        # DELETE OLD OFFER
+        try:
+
+            with open("last_offer.txt", "r") as f:
+                old_msg_id = int(f.read())
+
+            await context.bot.delete_message(
+                chat_id=CHANNEL_USERNAME,
+                message_id=old_msg_id
+            )
+
+        except:
+            pass
+
+        # SEND NEW OFFER
+        msg = await context.bot.send_message(
             chat_id=CHANNEL_USERNAME,
             text=f"""
 🔥 عرض تلقائي جديد
@@ -616,6 +473,11 @@ async def send_jobs_to_channel(context):
 """
         )
 
+        # SAVE MESSAGE ID
+        with open("last_offer.txt", "w") as f:
+            f.write(str(msg.message_id))
+
+        # UPDATE WEBSITE
         offer_data = f"""{title}
 {description}
 {price}
@@ -658,13 +520,6 @@ def setup_handlers(app):
         CallbackQueryHandler(
             service_click,
             pattern="^service_"
-        )
-    )
-
-    app.add_handler(
-        CallbackQueryHandler(
-            buy_balance,
-            pattern="^buy_balance$"
         )
     )
 
