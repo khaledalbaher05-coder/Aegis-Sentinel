@@ -19,8 +19,7 @@ from bot.database import (
     register_user,
     get_all_services,
     create_order,
-    get_user_balance,
-    activate_subscription
+    get_user_balance
 )
 
 from bot.config import (
@@ -294,8 +293,10 @@ TNphKc3qmusVEHW4bw17LnHWGMAVxa1WdB
 
 ━━━━━━━━━━━━━━
 
-📸 قم بالدفع ثم اضغط:
+💳 بعد التحويل اضغط:
 ✅ تم الدفع
+
+🔍 سيتم التحقق من الدفع تلقائياً
 """
 
     with open("assets/usdt_qr.png", "rb") as qr:
@@ -327,18 +328,9 @@ async def confirm_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     data = pending_payments[user_id]
 
-    active_users[user_id] = {
-        "service": data["service"]
-    }
-
-    activate_subscription(
-        user_id,
-        data["service"]
-    )
-
     await query.message.reply_text(
         f"""
-✅ تم تفعيل الخدمة تلقائياً
+⏳ تم إرسال طلب التحقق
 
 ━━━━━━━━━━━━━━
 
@@ -350,7 +342,9 @@ ${data['price']}
 
 ━━━━━━━━━━━━━━
 
-🚀 الحماية أصبحت مفعلة
+🔍 جاري التحقق من وصول الدفع...
+
+⚠️ لن يتم التفعيل حتى يصل التحويل للمحفظة
 """
     )
 
