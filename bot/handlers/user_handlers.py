@@ -526,8 +526,7 @@ async def send_jobs_to_channel(context):
         }
 
         with open(
-            "offers.json",
-            "w",
+            "landing_page/offers.json",            "w",
             encoding="utf-8"
         ) as f:
 
