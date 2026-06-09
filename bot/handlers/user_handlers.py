@@ -189,7 +189,6 @@ async def service_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
         query.from_user.id,
         service_name,
         price,
-        "pending"
     )
 
     pending_payments[
