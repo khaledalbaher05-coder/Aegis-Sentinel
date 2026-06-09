@@ -185,6 +185,10 @@ async def service_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
         2
     )
 
+    print("DEBUG 1")
+    print("service =", service_name)
+    print("price =", price)
+
     create_order(
         query.from_user.id,
         service_name,
