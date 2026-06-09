@@ -1,3 +1,4 @@
+from bot.payment_checker import start_checker
 import logging
 import asyncio
 import threading
@@ -137,8 +138,13 @@ async def main():
 if __name__ == "__main__":
 
     threading.Thread(
-        target=run_web
+        target=run_web,
+        daemon=True
+    ).start()
+
+    threading.Thread(
+        target=start_checker,
+        daemon=True
     ).start()
 
     asyncio.run(main())
-

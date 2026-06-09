@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>AEGIS SENTINEL</title>
+
+<style>
+
+body{
+    background:#0d1117;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+    padding-top:50px;
+}
+
+.box{
+    width:500px;
+    margin:auto;
+    background:#161b22;
+    padding:30px;
+    border-radius:20px;
+    border:1px solid #30363d;
+}
+
+h1{
+    color:#00ff99;
+}
+
+.price{
+    color:gold;
+    font-size:40px;
+    margin-top:20px;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="box">
+
+<h1 id="offer-title">
+LOADING...
+</h1>
+
+<p id="offer-description">
+Waiting Offers...
+</p>
+
+<div class="price" id="offer-price">
+$
+</div>
+
+</div>
+
+<script>
+
+async function loadOffer(){
+
+    try{
+
+        const res = await fetch("/offers.json?" + Date.now());
+
+        const data = await res.json();
+
+        document.getElementById("offer-title").innerText =
+            data.title;
+
+        document.getElementById("offer-description").innerText =
+            data.description;
+
+        document.getElementById("offer-price").innerText =
+            "$" + data.price;
+
+    }catch(e){
+
+        console.log(e);
+
+    }
+
+}
+
+loadOffer();
+
+setInterval(loadOffer,10000);
+
+</script>
+
+</body>
+</html>
+

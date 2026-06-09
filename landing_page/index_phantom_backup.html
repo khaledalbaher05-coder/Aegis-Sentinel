@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PhantomSec Terminal</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="bg-[#020817] text-white">
+
+<header class="border-b border-cyan-900 bg-[#020817] sticky top-0 z-50">
+
+<div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+
+<h1 class="text-3xl font-bold text-cyan-400">
+PHANTOMSEC ☠
+</h1>
+
+<nav class="flex gap-8 text-lg">
+
+<a href="#features" class="hover:text-cyan-400">المميزات</a>
+<a href="#offers" class="hover:text-cyan-400">العروض</a>
+<a href="#pricing" class="hover:text-cyan-400">الأسعار</a>
+
+</nav>
+
+<a href="https://t.me/mostaql_hunter"
+class="bg-cyan-500 text-black px-5 py-2 rounded-xl font-bold hover:bg-cyan-400">
+قناة التليجرام
+</a>
+
+</div>
+
+</header>
+
+<section class="py-28 text-center">
+
+<h2 class="text-6xl font-bold mb-8 text-cyan-400">
+PHANTOMSEC TERMINAL
+</h2>
+
+<p class="text-2xl text-slate-300 mb-10">
+أتمتة الحماية والـ Pentesting في تليجرام
+</p>
+
+<a href="#offers"
+class="bg-cyan-500 hover:bg-cyan-400 text-black px-10 py-4 rounded-2xl text-xl font-bold">
+استكشف العروض
+</a>
+
+</section>
+
+<section id="features" class="py-24 border-t border-cyan-900">
+
+<h2 class="text-5xl font-bold text-center mb-20">
+مميزات النظام
+</h2>
+
+<div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-6">
+
+<div class="bg-[#06111f] p-8 rounded-2xl border border-cyan-900 text-center">
+<div class="text-5xl mb-5">💳</div>
+<h3 class="text-2xl font-bold mb-4">بوابة دفع</h3>
+<p class="text-slate-400">USDT + شام كاش QR</p>
+</div>
+
+<div class="bg-[#06111f] p-8 rounded-2xl border border-cyan-900 text-center">
+<div class="text-5xl mb-5">🗄️</div>
+<h3 class="text-2xl font-bold mb-4">قاعدة بيانات</h3>
+<p class="text-slate-400">SQLite لحفظ الطلبات</p>
+</div>
+
+<div class="bg-[#06111f] p-8 rounded-2xl border border-cyan-900 text-center">
+<div class="text-5xl mb-5">🚀</div>
+<h3 class="text-2xl font-bold mb-4">حماية تلقائية</h3>
+<p class="text-slate-400">Anti Spam + Moderation</p>
+</div>
+
+<div class="bg-[#06111f] p-8 rounded-2xl border border-cyan-900 text-center">
+<div class="text-5xl mb-5">👑</div>
+<h3 class="text-2xl font-bold mb-4">لوحة إدارة</h3>
+<p class="text-slate-400">تحكم كامل بالنظام</p>
+</div>
+
+</div>
+
+</section>
+
+<section id="offers" class="py-24 border-t border-cyan-900">
+
+<h2 class="text-5xl font-bold text-center mb-5">
+🔥 أحدث العروض
+</h2>
+
+<p class="text-center text-slate-400 mb-20 text-xl">
+يتم تحديث العروض تلقائياً
+</p>
+
+<div id="offers-container"
+class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-6">
+</div>
+
+</section>
+
+<section id="pricing" class="py-24 border-t border-cyan-900">
+
+<h2 class="text-5xl font-bold text-center mb-20">
+الأسعار
+</h2>
+
+<div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-10 px-6">
+
+<div class="bg-[#06111f] border border-cyan-900 p-10 rounded-3xl text-center">
+
+<h3 class="text-3xl font-bold mb-6">
+Phantom Subscription
+</h3>
+
+<div class="text-6xl text-cyan-400 font-bold mb-6">
+$40
+</div>
+
+<p class="text-slate-400 text-xl">
+تشغيل كامل للبوت
+</p>
+
+</div>
+
+<div class="bg-[#06111f] border-2 border-cyan-400 p-10 rounded-3xl text-center">
+
+<h3 class="text-3xl font-bold mb-6 text-cyan-400">
+Full Source License
+</h3>
+
+<div class="text-6xl font-bold mb-6">
+$50
+</div>
+
+<p class="text-slate-400 text-xl">
+السورس كود الكامل
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+<footer class="text-center py-10 border-t border-cyan-900 text-slate-500">
+
+ALL RIGHTS RESERVED © 2026 PHANTOMSEC LABS
+
+</footer>
+
+<script>
+
+async function loadOffers() {
+
+const response = await fetch(
+"https://raw.githubusercontent.com/khaledalbaher05-coder/phantom-offers/main/offers.json"
+);
+
+const offers = await response.json();
+
+const container = document.getElementById("offers-container");
+
+container.innerHTML = "";
+
+offers.reverse().forEach((offer) => {
+
+container.innerHTML += `
+
+<div class="bg-[#06111f] border border-cyan-900 rounded-3xl p-8">
+
+<div class="flex justify-between items-center mb-5">
+
+<h3 class="text-2xl font-bold text-cyan-400">
+${offer.title}
+</h3>
+
+<span class="text-sm text-slate-500">
+${offer.date || ""}
+</span>
+
+</div>
+
+<p class="text-slate-300 mb-8 text-lg leading-loose">
+${offer.description}
+</p>
+
+<div class="flex justify-between items-center">
+
+<div class="text-5xl font-bold">
+$${offer.price}
+</div>
+
+<a href="https://t.me/mostaql_hunter"
+class="bg-cyan-500 hover:bg-cyan-400 text-black px-6 py-3 rounded-xl font-bold">
+شراء الآن
+</a>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+}
+
+loadOffers();
+
+</script>
+
+</body>
+</html>
